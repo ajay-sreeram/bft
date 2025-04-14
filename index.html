@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Feeding Tracker</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍼</text></svg>">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- include index.css-->
+    <link rel="stylesheet" href="style.css">
+    <!-- include app.js -->
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Baby Feeding Tracker</h1>
+            <nav id="main-nav">
+                <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+                <button class="nav-btn" data-page="add-entry">Add Entry</button>
+                <button class="nav-btn" data-page="reports">Reports</button>
+            </nav>
+        </header>
+        
+        <main>
+            <!-- Dashboard Page -->
+            <section id="dashboard" class="page active">
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Today's Summary</h3>
+                        <div class="card-content" id="today-summary">
+                            <p>Milk produced: <span id="milk-produced">0</span> oz</p>
+                            <p>Milk consumed: <span id="milk-consumed">0</span> oz</p>
+                            <p>Direct feedings: <span id="direct-feedings">0</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Recent Activities</h3>
+                        <div class="card-content" id="recent-activities">
+                            <p>No recent activities</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="data-table summary-table">
+                    <h3>Feeding Summary</h3>
+                    <table id="feeding-summary">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Count</th>
+                                <th>Total Duration</th>
+                                <th>Avg Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="summary-pumping">
+                                <td>Pumping</td>
+                                <td>0</td>
+                                <td>00:00</td>
+                                <td>00:00</td>
+                            </tr>
+                            <tr id="summary-bottle">
+                                <td>Bottle</td>
+                                <td>0</td>
+                                <td>00:00</td>
+                                <td>00:00</td>
+                            </tr>
+                            <tr id="summary-direct">
+                                <td>Direct</td>
+                                <td>0</td>
+                                <td>00:00</td>
+                                <td>00:00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="chart-view">Charts</button>
+                    <button class="tab-btn" data-tab="table-view">Table</button>
+                </div>
+                
+                <div id="chart-view" class="tab-content active">
+                    <div class="chart-container">
+                        <h3>Today's Timeline</h3>
+                        <canvas id="today-timeline"></canvas>
+                    </div>
+                </div>
+                
+                <div id="table-view" class="tab-content">
+                    <div class="data-table">
+                        <h3>Today's Feeding Log</h3>
+                        <table id="today-feeding-log">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Duration</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated with JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Add Entry Page -->
+            <section id="add-entry" class="page">
+                <div class="entry-type-selector">
+                    <button class="type-btn active" data-type="pump">Pumping</button>
+                    <button class="type-btn" data-type="bottle">Bottle Feeding</button>
+                    <button class="type-btn" data-type="direct">Direct Feeding</button>
+                </div>
+                
+                <!-- Pumping Form -->
+                <form id="pump-form" class="entry-form active">
+                    <h3>Record Pumping</h3>
+                    
+                    <div class="form-group">
+                        <label for="pump-date">Date:</label>
+                        <input type="date" id="pump-date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pump-start">Start Time:</label>
+                        <input type="time" id="pump-start" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pump-end">End Time:</label>
+                        <input type="time" id="pump-end" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pump-amount">Amount (oz):</label>
+                        <input type="number" id="pump-amount" min="0" step="0.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pump-notes">Notes:</label>
+                        <textarea id="pump-notes"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Save</button>
+                </form>
+                
+                <!-- Bottle Feeding Form -->
+                <form id="bottle-form" class="entry-form">
+                    <h3>Record Bottle Feeding</h3>
+                    
+                    <div class="form-group">
+                        <label for="bottle-date">Date:</label>
+                        <input type="date" id="bottle-date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bottle-time">Time:</label>
+                        <input type="time" id="bottle-time" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bottle-amount">Amount (oz):</label>
+                        <input type="number" id="bottle-amount" min="0" step="0.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Type:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="bottle-type-breast" name="bottle-type" value="breast" checked>
+                            <label for="bottle-type-breast">Breast Milk</label>
+                            
+                            <input type="radio" id="bottle-type-formula" name="bottle-type" value="formula">
+                            <label for="bottle-type-formula">Formula</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bottle-notes">Notes:</label>
+                        <textarea id="bottle-notes"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Save</button>
+                </form>
+                
+                <!-- Direct Feeding Form -->
+                <form id="direct-form" class="entry-form">
+                    <h3>Record Direct Feeding</h3>
+                    
+                    <div class="form-group">
+                        <label for="direct-date">Date:</label>
+                        <input type="date" id="direct-date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="direct-start">Start Time:</label>
+                        <input type="time" id="direct-start" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="direct-end">End Time:</label>
+                        <input type="time" id="direct-end" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Breast:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="breast-left" name="breast" value="left" checked>
+                            <label for="breast-left">Left</label>
+                            
+                            <input type="radio" id="breast-right" name="breast" value="right">
+                            <label for="breast-right">Right</label>
+                            
+                            <input type="radio" id="breast-both" name="breast" value="both">
+                            <label for="breast-both">Both</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="direct-notes">Notes:</label>
+                        <textarea id="direct-notes"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Save</button>
+                </form>
+            </section>
+            
+            <!-- Reports Page -->
+            <section id="reports" class="page">
+                <div class="report-selector">
+                    <button class="report-btn active" data-report="daily">Daily</button>
+                    <button class="report-btn" data-report="weekly">Weekly</button>
+                    <button class="report-btn" data-report="monthly">Monthly</button>
+                </div>
+                
+                <div class="date-selector">
+                    <button id="prev-date">←</button>
+                    <span id="current-date">Today</span>
+                    <button id="next-date">→</button>
+                </div>
+                
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="reports-chart-view">Charts</button>
+                    <button class="tab-btn" data-tab="reports-table-view">Table</button>
+                </div>
+                
+                <div id="reports-chart-view" class="tab-content active">
+                    <div class="chart-container">
+                        <h3>Milk Production vs. Consumption</h3>
+                        <canvas id="milk-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Feeding Patterns</h3>
+                        <canvas id="feeding-pattern-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div id="reports-table-view" class="tab-content">
+                    <div class="data-table">
+                        <h3>Feeding Log</h3>
+                        <table id="feeding-log">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Duration</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated with JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Baby Feeding Tracker - All data is stored locally on your device</p>
+        </footer>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
