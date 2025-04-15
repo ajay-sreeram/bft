@@ -13,6 +13,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add export button
     addExportButton();
+    
+    // Enhance form layout for better usability
+    enhanceFormLayout();
+    
+    // Add window resize handler
+    window.addEventListener('resize', function() {
+        // Check for table scrollability on resize
+        if (window.innerWidth <= 576) {
+            document.querySelectorAll('.data-table').forEach(table => {
+                if (table.scrollWidth > table.clientWidth) {
+                    table.classList.add('has-scroll');
+                } else {
+                    table.classList.remove('has-scroll');
+                }
+            });
+        }
+    });
 });
 
 // App variables
@@ -1201,4 +1218,38 @@ function exportData() {
     // Trigger download
     link.click();
     document.body.removeChild(link);
+}
+
+// Enhance form layout for better usability
+function enhanceFormLayout() {
+    // Add grid layout container for better form organization on larger screens
+    document.querySelectorAll('.entry-form').forEach(form => {
+        // Group date and time fields together
+        const formGroups = form.querySelectorAll('.form-group');
+        
+        // Create a grid container for the first four fields (typically date/time fields)
+        if (formGroups.length >= 4) {
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'form-grid';
+            
+            // Move the first four form groups into the grid
+            for (let i = 0; i < Math.min(4, formGroups.length); i++) {
+                const group = formGroups[i];
+                form.removeChild(group);
+                gridContainer.appendChild(group);
+            }
+            
+            // Insert the grid at the top of the form
+            form.insertBefore(gridContainer, form.firstChild);
+        }
+    });
+    
+    // Add scroll hint to tables on mobile
+    if (window.innerWidth <= 576) {
+        document.querySelectorAll('.data-table').forEach(table => {
+            if (table.scrollWidth > table.clientWidth) {
+                table.classList.add('has-scroll');
+            }
+        });
+    }
 }
