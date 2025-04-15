@@ -153,8 +153,9 @@ h1 {
 /* Chart Container */
 .chart-container {
     padding: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     height: 250px; /* Limit chart height */
+    position: relative;
 }
 
 .chart-container h3 {
@@ -172,6 +173,11 @@ canvas {
     display: flex;
     margin-bottom: 15px;
     border-bottom: 1px solid var(--primary-light);
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 5px;
+    border-bottom: none;
 }
 
 .tab-btn {
@@ -183,12 +189,27 @@ canvas {
     border-bottom: 2px solid transparent;
     cursor: pointer;
     font-size: 0.9rem;
+    flex: 1;
+    text-align: center;
+    padding: 12px 10px;
+    font-weight: 700;
+    color: var(--text-light);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: none;
 }
 
 .tab-btn.active {
     border-bottom: 3px solid var(--primary);
     color: var(--primary);
     font-weight: 500;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    border-bottom: none;
+}
+
+.tab-btn:active {
+    transform: scale(0.98);
 }
 
 .tab-content {
@@ -233,7 +254,7 @@ canvas {
 .entry-form {
     display: none;
     padding: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .entry-form.active {
@@ -242,6 +263,15 @@ canvas {
 
 .entry-form h3 {
     margin-bottom: 20px;
+}
+
+/* Mobile-optimized form layout */
+@media (min-width: 768px) {
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
 }
 
 .form-group {
@@ -255,49 +285,107 @@ label {
     display: block;
 }
 
+/* Improved input fields */
 input[type="date"],
 input[type="time"],
 input[type="number"],
-textarea {
+textarea,
+select {
     width: 100%;
     border: 2px solid #e1e1e1;
-    border-radius: 8px;
-    padding: 12px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    font-size: 1rem;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    background-color: #f9f9f9;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    -webkit-appearance: none; /* Removes default styling */
+    color: var(--text);
 }
 
-input[type="date"]:focus,
-input[type="time"]:focus,
-input[type="number"]:focus,
-textarea:focus {
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(255, 107, 152, 0.2);
+/* Input focus states */
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--primary);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(255, 107, 152, 0.2), inset 0 2px 4px rgba(0,0,0,0);
     outline: none;
 }
 
+/* Input labels with icons */
+.form-group label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.form-group label::before {
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+/* Label icons for different fields */
+label[for*="date"]::before { content: "📅"; }
+label[for*="time"]::before, 
+label[for*="start"]::before,
+label[for*="end"]::before { content: "⏱️"; }
+label[for*="amount"]::before { content: "📏"; }
+label[for*="notes"]::before { content: "📝"; }
+
+/* Improved radio buttons */
 .radio-group {
     display: flex;
-    gap: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-.radio-group input[type="radio"] {
-    margin-right: 5px;
+.radio-option {
+    flex: 1;
+    min-width: 80px;
 }
 
+.radio-option input[type="radio"] {
+    display: none;
+}
+
+.radio-option label {
+    display: block;
+    padding: 12px;
+    text-align: center;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.radio-option input[type="radio"]:checked + label {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Submit button enhancements */
 .submit-btn {
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 16px;
     box-shadow: 0 4px 12px rgba(200, 56, 102, 0.3);
     transition: all 0.3s ease;
-    padding: 12px 20px;
-    font-size: 1rem;
     cursor: pointer;
     width: 100%;
     margin-top: 10px;
+    letter-spacing: 0.5px;
 }
 
 .submit-btn:hover {
@@ -306,11 +394,26 @@ textarea:focus {
     box-shadow: 0 6px 14px rgba(200, 56, 102, 0.4);
 }
 
+.submit-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(200, 56, 102, 0.3);
+}
+
+/* Textarea improvements */
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
 /* Report Selector */
 .report-selector {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 10px;
 }
 
 .report-btn {
@@ -320,6 +423,16 @@ textarea:focus {
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 10px;
+    color: var(--text-light);
 }
 
 .report-btn:first-child {
@@ -334,6 +447,8 @@ textarea:focus {
     background-color: #5c7cfa;
     color: white;
     border-color: #5c7cfa;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
 }
 
 /* Date Selector */
@@ -342,6 +457,10 @@ textarea:focus {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 10px;
 }
 
 .date-selector button {
@@ -355,18 +474,52 @@ textarea:focus {
     display: flex;
     justify-content: center;
     align-items: center;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+
+.date-selector button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .date-selector span {
     margin: 0 15px;
     font-weight: 500;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--primary-dark);
+    padding: 10px 15px;
+    background-color: var(--primary-light);
+    border-radius: 10px;
+    min-width: 120px;
+    text-align: center;
 }
 
 /* Data Table */
 .data-table {
     padding: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     overflow-x: auto;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .data-table h3 {
@@ -378,6 +531,8 @@ textarea:focus {
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
+    width: 100%;
+    font-size: 14px;
 }
 
 .data-table th {
@@ -385,6 +540,14 @@ textarea:focus {
     color: var(--primary-dark);
     font-weight: 700;
     padding: 12px 15px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--primary-dark);
+    background-color: var(--primary-light);
 }
 
 .data-table th:first-child {
@@ -406,6 +569,9 @@ textarea:focus {
 .data-table td {
     padding: 12px 15px;
     border-bottom: 1px solid #f0f0f0;
+    padding: 12px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
 }
 
 .data-table tr:nth-child(even) td {
@@ -449,10 +615,10 @@ textarea:focus {
 
 /* Export Button */
 .export-btn {
-    background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 12px 15px;
     font-size: 0.9rem;
     font-weight: 600;
@@ -460,13 +626,13 @@ textarea:focus {
     margin-bottom: 20px;
     display: block;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    box-shadow: 0 4px 12px rgba(200, 56, 102, 0.3);
 }
 
 .export-btn:hover {
-    background: linear-gradient(135deg, var(--secondary-dark), var(--secondary));
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(74, 144, 226, 0.4);
+    box-shadow: 0 6px 14px rgba(200, 56, 102, 0.4);
 }
 
 /* Add some baby themed icons/elements */
@@ -585,6 +751,61 @@ footer p::before {
         padding: 15px;
         font-size: 16px; /* Prevents iOS zoom on focus */
     }
+    
+    /* Floating add button for quick access */
+    .floating-add {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 30px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+    
+    .floating-add:active {
+        transform: scale(0.95);
+    }
+    
+    /* Improve touch targets */
+    button, 
+    .nav-btn, 
+    .tab-btn, 
+    .type-btn {
+        min-height: 44px; /* Apple's recommended minimum */
+    }
+    
+    /* Improve spacing on mobile */
+    .card, .data-table, .chart-container {
+        margin-bottom: 15px;
+        padding: 15px;
+    }
+    
+    /* Stack nav buttons better */
+    #main-nav {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .nav-btn {
+        flex: 1;
+        min-width: 80px;
+        text-align: center;
+    }
+    
+    /* Optimize footer for mobile */
+    footer {
+        padding: 15px;
+        margin-bottom: 80px; /* Space for floating button */
+    }
 }
 
 /* Extra small devices */
@@ -632,5 +853,73 @@ footer p::before {
     .card h3 {
         font-size: 1rem;
         margin-bottom: 8px;
+    }
+    
+    .data-table {
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+    }
+    
+    .data-table table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    
+    .data-table thead {
+        display: block;
+    }
+    
+    .data-table tbody {
+        display: block;
+    }
+    
+    .data-table th, 
+    .data-table td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+    
+    /* Optional: Alternate table format for very small screens */
+    @media (max-width: 400px) {
+        .data-table.compact-view td:not(:first-child):not(.primary-data) {
+            max-width: 80px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+    
+    /* Hint for sideways scrolling */
+    .data-table::after {
+        content: "👈 Scroll to see more";
+        display: block;
+        text-align: right;
+        font-size: 12px;
+        padding: 5px 10px;
+        color: var(--text-light);
+        background-color: rgba(255,255,255,0.8);
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        border-radius: 20px 0 0 0;
+        animation: fadeOut 5s forwards;
+        pointer-events: none;
+    }
+    
+    @keyframes fadeOut {
+        0%, 80% { opacity: 1; }
+        100% { opacity: 0; visibility: hidden; }
+    }
+}
+
+/* Reduce motion option for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
     }
 }
