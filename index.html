@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baby Feeding Tracker</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍼</text></svg>">
-    <!-- <link rel="stylesheet" href="styles.css"> -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="styles.css"> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- include index.css-->
     <link rel="stylesheet" href="style.css">
@@ -173,11 +174,15 @@
                     <div class="form-group">
                         <label>Type:</label>
                         <div class="radio-group">
-                            <input type="radio" id="bottle-type-breast" name="bottle-type" value="breast" checked>
-                            <label for="bottle-type-breast">Breast Milk</label>
+                            <div class="radio-option">
+                                <input type="radio" id="bottle-type-breast" name="bottle-type" value="breast" checked>
+                                <label for="bottle-type-breast">Breast Milk</label>
+                            </div>
                             
-                            <input type="radio" id="bottle-type-formula" name="bottle-type" value="formula">
-                            <label for="bottle-type-formula">Formula</label>
+                            <div class="radio-option">
+                                <input type="radio" id="bottle-type-formula" name="bottle-type" value="formula">
+                                <label for="bottle-type-formula">Formula</label>
+                            </div>
                         </div>
                     </div>
                     
@@ -211,14 +216,20 @@
                     <div class="form-group">
                         <label>Breast:</label>
                         <div class="radio-group">
-                            <input type="radio" id="breast-left" name="breast" value="left" checked>
-                            <label for="breast-left">Left</label>
+                            <div class="radio-option">
+                                <input type="radio" id="breast-left" name="breast" value="left" checked>
+                                <label for="breast-left">Left</label>
+                            </div>
                             
-                            <input type="radio" id="breast-right" name="breast" value="right">
-                            <label for="breast-right">Right</label>
+                            <div class="radio-option">
+                                <input type="radio" id="breast-right" name="breast" value="right">
+                                <label for="breast-right">Right</label>
+                            </div>
                             
-                            <input type="radio" id="breast-both" name="breast" value="both">
-                            <label for="breast-both">Both</label>
+                            <div class="radio-option">
+                                <input type="radio" id="breast-both" name="breast" value="both">
+                                <label for="breast-both">Both</label>
+                            </div>
                         </div>
                     </div>
                     
@@ -288,6 +299,15 @@
         </footer>
     </div>
     
+    <div class="floating-add" id="floating-add-btn">+</div>
+    
     <script src="app.js"></script>
+    <script>
+        // Quick add button
+        document.getElementById('floating-add-btn').addEventListener('click', function() {
+            setActivePage('add-entry');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+    </script>
 </body>
 </html>
