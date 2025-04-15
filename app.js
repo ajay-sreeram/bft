@@ -23,7 +23,11 @@ let feedingData = {
 };
 
 let currentView = {
-    page: 'dashboard',
+    // page: 'dashboard',
+    // entryType: 'pump',
+    // reportType: 'daily',
+    // reportDate: new Date()
+    page: 'add-entry',  // Changed from 'dashboard' to 'add-entry'
     entryType: 'pump',
     reportType: 'daily',
     reportDate: new Date()
@@ -45,6 +49,9 @@ function initApp() {
     
     // Initialize charts
     initializeCharts();
+
+    // Set Add Entry as the default active page
+    setActivePage('add-entry');
 }
 
 // Set up event listeners
