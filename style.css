@@ -587,6 +587,44 @@ textarea {
     text-align: right;
 }
 
+.data-table th, 
+.data-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+}
+
+/* Optional: Alternate table format for very small screens */
+@media (max-width: 400px) {
+    .data-table.compact-view td:not(:first-child):not(.primary-data) {
+        max-width: 80px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* Hint for sideways scrolling */
+.data-table::after {
+    content: "👈 Scroll to see more";
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    padding: 5px 10px;
+    color: var(--text-light);
+    background-color: rgba(255,255,255,0.8);
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px 0 0 0;
+    animation: fadeOut 5s forwards;
+    pointer-events: none;
+}
+
+@keyframes fadeOut {
+    0%, 80% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+}
+
 /* Summary Table */
 .summary-table {
     margin-bottom: 20px;
@@ -912,6 +950,64 @@ footer p::before {
     @keyframes fadeOut {
         0%, 80% { opacity: 1; }
         100% { opacity: 0; visibility: hidden; }
+    }
+    
+    /* Improved navigation spacing for mobile */
+    @media (max-width: 576px) {
+        #main-nav {
+            justify-content: space-between;
+            gap: 6px;
+            padding: 0 10px;
+        }
+        
+        .nav-btn {
+            /* Make buttons slightly smaller on mobile */
+            padding: 8px 10px;
+            font-size: 14px;
+            
+            /* Ensure minimum width but allow some flexibility */
+            min-width: 30%;
+            flex: 0 1 auto;
+            
+            /* Center text */
+            text-align: center;
+            
+            /* Maintain good touch target */
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+    
+    /* Extra small devices */
+    @media (max-width: 360px) {
+        .nav-btn {
+            padding: 8px 6px;
+            font-size: 13px;
+        }
+        
+        /* Optionally, use abbreviated text for extremely small screens */
+        .nav-btn[data-page="dashboard"]::before {
+            content: "📊 ";
+        }
+        
+        .nav-btn[data-page="add-entry"]::before {
+            content: "➕ ";
+        }
+        
+        .nav-btn[data-page="reports"]::before {
+            content: "📝 ";
+        }
+    }
+    
+    /* Reduce motion option for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+        }
     }
 }
 
