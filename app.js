@@ -64,6 +64,9 @@ function initApp() {
         input.max = today;
     });
     
+    // Set default duration for bottle feeding
+    document.getElementById('bottle-duration').value = "05:00"; // Default 5 minutes
+    
     // Initialize charts
     initializeCharts();
 
@@ -279,7 +282,7 @@ function initializeCharts() {
                     data: []
                 },
                 {
-                    label: 'Direct Feeding',
+                    label: 'Nursing',
                     backgroundColor: 'rgba(75, 192, 192, 0.6)',
                     data: []
                 }
@@ -461,7 +464,8 @@ function handlePumpFormSubmit(e) {
     
     // Validate times
     if (endDateTime <= startDateTime) {
-        alert('End time must be after start time');
+        // alert('End time must be after start time');
+        showToast('End time must be after start time', 'error');
         return;
     }
     
@@ -487,7 +491,25 @@ function handlePumpFormSubmit(e) {
     document.getElementById('pump-date').value = new Date().toISOString().split('T')[0];
     
     // Show confirmation
-    alert('Pumping session saved!');
+    showToast('Pumping session saved!');
+}
+
+function validateDuration(durationStr) {
+    // Check if format matches mm:ss (1-2 digits for minutes, 2 digits for seconds)
+    const regex = /^([0-9]{1,2}):([0-9]{2})$/;
+    const match = durationStr.match(regex);
+    
+    if (!match) {
+        return false;
+    }
+    
+    // Check if seconds are less than 60
+    const seconds = parseInt(match[2]);
+    if (seconds >= 60) {
+        return false;
+    }
+    
+    return true;
 }
 
 // Handle bottle form submission
@@ -500,6 +522,23 @@ function handleBottleFormSubmit(e) {
     const amount = parseFloat(document.getElementById('bottle-amount').value);
     const type = document.querySelector('input[name="bottle-type"]:checked').value;
     const notes = document.getElementById('bottle-notes').value;
+    const durationStr = document.getElementById('bottle-duration').value;
+
+    if (!validateDuration(durationStr)) {
+        // Show error message
+        showToast('Please enter a valid duration in the format mm:ss (e.g., 05:00 for 5 minutes).\nSeconds must be less than 60.', 'error');
+        
+        // Focus on the duration field
+        document.getElementById('bottle-duration').focus();
+        return;
+    }
+    
+    // Parse duration from mm:ss format to minutes
+    let duration = 0;
+    if (durationStr) {
+        const [minutes, seconds] = durationStr.split(':').map(Number);
+        duration = minutes + (seconds / 60);
+    }
     
     // Create datetime object
     const dateTime = new Date(`${date}T${time}`);
@@ -511,6 +550,7 @@ function handleBottleFormSubmit(e) {
         dateTime: dateTime,
         amount: amount,
         type: type,
+        duration: duration,
         notes: notes,
         timestamp: new Date().getTime()
     });
@@ -523,9 +563,10 @@ function handleBottleFormSubmit(e) {
     e.target.reset();
     document.getElementById('bottle-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('bottle-type-breast').checked = true;
+    document.getElementById('bottle-duration').value = "05:00"; // Default 5 minutes
     
     // Show confirmation
-    alert('Bottle feeding saved!');
+    showToast('Bottle feeding saved!');
 }
 
 // Handle direct form submission
@@ -548,7 +589,7 @@ function handleDirectFormSubmit(e) {
     
     // Validate times
     if (endDateTime <= startDateTime) {
-        alert('End time must be after start time');
+        showToast('End time must be after start time', 'error');
         return;
     }
     
@@ -575,7 +616,7 @@ function handleDirectFormSubmit(e) {
     document.getElementById('breast-left').checked = true;
     
     // Show confirmation
-    alert('Direct feeding saved!');
+    showToast('Nursing feeding saved!');
 }
 
 // Save data to local storage
@@ -667,10 +708,10 @@ function updateFeedingSummary(pumping, bottle, direct) {
     document.querySelector('#summary-pumping td:nth-child(3)').textContent = formatDuration(pumpingTotalDuration);
     document.querySelector('#summary-pumping td:nth-child(4)').textContent = formatDuration(pumpingAvgDuration);
     
-    // Bottle summary (assuming 10 min per bottle)
+    // Bottle summary (using actual duration data)
     const bottleCount = bottle.length;
-    const bottleTotalDuration = bottleCount * 10; // 10 min per bottle
-    const bottleAvgDuration = bottleCount > 0 ? 10 : 0;
+    const bottleTotalDuration = bottle.reduce((sum, item) => sum + (item.duration || 5), 0);
+    const bottleAvgDuration = bottleCount > 0 ? bottleTotalDuration / bottleCount : 0;
     
     document.querySelector('#summary-bottle td:nth-child(2)').textContent = bottleCount;
     document.querySelector('#summary-bottle td:nth-child(3)').textContent = formatDuration(bottleTotalDuration);
@@ -694,7 +735,7 @@ function updateRecentActivities() {
     let allActivities = [
         ...feedingData.pumping.map(item => ({ ...item, type: 'Pumping' })),
         ...feedingData.bottle.map(item => ({ ...item, type: 'Bottle' })),
-        ...feedingData.direct.map(item => ({ ...item, type: 'Direct' }))
+        ...feedingData.direct.map(item => ({ ...item, type: 'Nursing' }))
     ].sort((a, b) => b.timestamp - a.timestamp);
     
     // Take only the 5 most recent
@@ -719,9 +760,9 @@ function updateRecentActivities() {
                 break;
             case 'Bottle':
                 details = `${activity.amount} oz, ${activity.type === 'breast' ? 'breast milk' : 'formula'}`;
-                duration = '00:10'; // Assumed duration
+                duration = formatDuration(activity.duration || 5); // Use actual duration or default to 5 minutes
                 break;
-            case 'Direct':
+            case 'Nursing':
                 details = `${activity.breast} breast`;
                 duration = formatDuration(activity.duration);
                 break;
@@ -766,7 +807,7 @@ function updateTodayFeedingLog(pumping, bottle, direct) {
             type: 'Bottle',
             dateTime: item.dateTime,
             details: `${item.amount} oz, ${item.type === 'breast' ? 'breast milk' : 'formula'}`,
-            duration: 10, // Estimate for bottle feeding time
+            duration: item.duration || 5, // Use actual duration or default to 5 minutes
             notes: item.notes
         });
     });
@@ -774,7 +815,7 @@ function updateTodayFeedingLog(pumping, bottle, direct) {
     // Add direct feeding activities
     direct.forEach(item => {
         allActivities.push({
-            type: 'Direct',
+            type: 'Nursing',
             dateTime: item.startDateTime,
             details: `${item.breast} breast`,
             duration: item.duration,
@@ -833,7 +874,7 @@ function updateTimelineChart(pumping, bottle, direct) {
     // Aggregate bottle data by hour (use 10 minutes as an estimate for bottle feeding duration)
     bottle.forEach(item => {
         const hour = new Date(item.dateTime).getHours();
-        bottleByHour[hour] += 10;  // Assuming 10 minutes per bottle feeding
+        bottleByHour[hour] += item.duration || 5;  // Use actual duration or default to 5 minutes
     });
     
     // Aggregate direct feeding data by hour
@@ -1098,7 +1139,7 @@ function updateFeedingLog(reportData) {
             type: 'Bottle',
             dateTime: item.dateTime,
             details: `${item.amount} oz, ${item.type === 'breast' ? 'breast milk' : 'formula'}`,
-            duration: 10, // Estimated duration
+            duration: item.duration || 5, // Use actual duration or default to 5 minutes
             notes: item.notes
         });
     });
@@ -1106,7 +1147,7 @@ function updateFeedingLog(reportData) {
     // Add direct feeding activities
     direct.forEach(item => {
         allActivities.push({
-            type: 'Direct',
+            type: 'Nursing',
             dateTime: item.startDateTime,
             details: `${item.breast} breast`,
             duration: item.duration,
@@ -1180,7 +1221,7 @@ function exportData() {
         })),
         ...feedingData.direct.map(item => ({
             ...item,
-            type: 'Direct'
+            type: 'Nursing'
         }))
     ];
     
@@ -1252,4 +1293,46 @@ function enhanceFormLayout() {
             }
         });
     }
+}
+
+function showToast(message, type = 'success', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Set icon based on type
+    let icon = '💬';
+    if (type === 'error') icon = '❌';
+    if (type === 'success') icon = '✅';
+    if (type === 'warning') icon = '⚠️';
+    
+    // Set title based on type
+    let title = 'Information';
+    if (type === 'error') title = 'Error';
+    if (type === 'success') title = 'Success';
+    if (type === 'warning') title = 'Warning';
+    
+    // Create toast content
+    toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+    `;
+    
+    // Add to container
+    container.appendChild(toast);
+    
+    // Trigger animation
+    setTimeout(() => {
+        toast.classList.add('hide');
+        setTimeout(() => {
+            container.removeChild(toast);
+        }, 300);
+    }, duration);
+    
+    return toast;
 }
